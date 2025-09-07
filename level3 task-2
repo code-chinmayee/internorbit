@@ -1,0 +1,109 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+class BankAccount {
+    private String accountNumber;
+    private String password;
+    private double balance;
+    private List<String> history = new ArrayList<>();
+
+    public BankAccount(String accountNumber, String password, double balance) {
+        this.accountNumber = accountNumber;
+        this.password = password;
+        this.balance = balance;
+    }
+
+    public boolean authenticate(String acc, String pass) {
+        return this.accountNumber.equals(acc) && this.password.equals(pass);
+    }
+
+    public void deposit(double amount) {
+        balance += amount;
+        history.add("Deposited: " + amount);
+        System.out.println("Deposit successful.");
+    }
+
+    public void withdraw(double amount) {
+        if (amount <= balance) {
+            balance -= amount;
+            history.add("Withdrew: " + amount);
+            System.out.println("Withdrawal successful.");
+        } else {
+            System.out.println("Insufficient funds.");
+        }
+    }
+
+    public void checkBalance() {
+        System.out.println("Balance: " + balance);
+    }
+
+    public void showHistory() {
+        System.out.println("--- Transaction History ---");
+        for (String h : history) {
+            System.out.println(h);
+        }
+    }
+
+    public void calculateInterest(double rate) {
+        double interest = balance * rate / 100;
+        balance += interest;
+        history.add("Interest Added: " + interest);
+        System.out.println("Interest added: " + interest);
+    }
+}
+
+public class BankSystem {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        BankAccount account = new BankAccount("12345", "password", 5000);
+
+        System.out.print("Enter account number: ");
+        String acc = scanner.nextLine();
+        System.out.print("Enter password: ");
+        String pass = scanner.nextLine();
+
+        if (!account.authenticate(acc, pass)) {
+            System.out.println("Authentication failed.");
+            return;
+        }
+
+        while (true) {
+            System.out.println("\n--- BANK MENU ---");
+            System.out.println("1. Check Balance");
+            System.out.println("2. Deposit");
+            System.out.println("3. Withdraw");
+            System.out.println("4. Transaction History");
+            System.out.println("5. Calculate Interest");
+            System.out.println("6. Exit");
+            System.out.print("Choose: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1 -> account.checkBalance();
+                case 2 -> {
+                    System.out.print("Enter amount: ");
+                    double dep = scanner.nextDouble();
+                    account.deposit(dep);
+                }
+                case 3 -> {
+                    System.out.print("Enter amount: ");
+                    double wd = scanner.nextDouble();
+                    account.withdraw(wd);
+                }
+                case 4 -> account.showHistory();
+                case 5 -> {
+                    System.out.print("Enter interest rate (%): ");
+                    double rate = scanner.nextDouble();
+                    account.calculateInterest(rate);
+                }
+                case 6 -> {
+                    System.out.println("Goodbye!");
+                    scanner.close();
+                    return;
+                }
+                default -> System.out.println("Invalid choice.");
+            }
+        }
+    }
+}
